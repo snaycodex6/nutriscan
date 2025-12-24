@@ -1,8 +1,6 @@
-@import "tailwindcss";
-
-@config {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"];
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
