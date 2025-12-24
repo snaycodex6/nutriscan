@@ -259,56 +259,57 @@ const App = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-slate-900">
-      
+    <div className="min-h-screen">
+
       {/* Header moderne */}
-      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-30 px-6 py-4">
-        <div className="max-w-md mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Apple className="text-white w-5 h-5" />
+      <header className="header">
+        <div className="header-content">
+          <div className="logo">
+            <div className="logo-icon">
+              <Apple className="w-5 h-5" />
             </div>
-            <div>
-              <h1 className="text-lg font-bold tracking-tight">NutriScan</h1>
-              <p className="text-xs text-slate-500">IA Nutritionnelle</p>
+            <div className="logo-text">
+              <h1>NutriScan</h1>
+              <p>IA Nutritionnelle</p>
             </div>
           </div>
-          <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
-            <User className="w-4 h-4 text-slate-600" />
+          <div className="user-avatar">
+            <User className="w-4 h-4" />
           </div>
         </div>
       </header>
 
-      <main className="max-w-md mx-auto px-6 py-8 pb-24">
+      <main className="container py-8 pb-24">
         {activeTab === 'scanner' && (
           <div className="space-y-6">
             {/* Zone de capture */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="card">
               {!image ? (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="p-12 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-colors"
+                  className="p-12 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
                 >
                   <div className="w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
                     <Camera className="w-10 h-10 text-emerald-600" />
                   </div>
                   <h3 className="text-xl font-bold mb-2 text-center">Scanner un repas</h3>
-                  <p className="text-slate-600 text-center text-sm max-w-xs">
+                  <p className="text-gray-600 text-center text-sm" style={{maxWidth: '20rem'}}>
                     Prenez une photo de votre assiette pour une analyse nutritionnelle instantanée
                   </p>
                 </div>
               ) : (
-                <div className="relative aspect-square bg-slate-900 rounded-2xl overflow-hidden">
+                <div className="relative aspect-square bg-gray-900 rounded-2xl overflow-hidden">
                   <img
                     src={image}
                     alt="Repas"
-                    className={`w-full h-full object-cover transition-all duration-500 ${loading ? 'opacity-50 scale-105 blur-sm' : ''}`}
+                    className="w-full h-full object-cover transition-all"
+                    style={{opacity: loading ? 0.5 : 1, transform: loading ? 'scale(1.05)' : 'scale(1)', filter: loading ? 'blur(2px)' : 'none'}}
                   />
                   {loading && <ScanningOverlay />}
                   {!result && !loading && (
                     <button
                       onClick={() => setImage(null)}
-                      className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-slate-700 p-2 rounded-xl hover:bg-white transition-colors shadow-lg"
+                      className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-gray-700 p-2 rounded-xl hover:bg-white transition-colors shadow-md"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
@@ -327,10 +328,7 @@ const App = () => {
 
             {/* Bouton d'analyse */}
             {image && !result && !loading && (
-              <button
-                onClick={analyzePlate}
-                className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold py-4 rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all active:scale-95"
-              >
+              <button className="btn-primary w-full flex items-center justify-center gap-3">
                 <Zap className="w-5 h-5" />
                 Analyser le repas
               </button>
@@ -338,19 +336,19 @@ const App = () => {
 
             {/* État de chargement */}
             {loading && (
-              <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+              <div className="card p-8">
                 <div className="text-center space-y-4">
                   <div className="flex justify-center gap-2">
                     {[0, 1, 2].map(i => (
                       <div
                         key={i}
                         className="w-3 h-3 bg-emerald-500 rounded-full animate-bounce"
-                        style={{ animationDelay: `${i * 0.2}s` }}
+                        style={{animationDelay: `${i * 0.2}s`}}
                       />
                     ))}
                   </div>
                   <div>
-                    <p className="font-semibold text-slate-900">Analyse en cours...</p>
+                    <p className="font-semibold text-gray-900">Analyse en cours...</p>
                     <p className="text-sm text-emerald-600 mt-1">{loadingMessages[loadingStep]}</p>
                   </div>
                 </div>
@@ -370,8 +368,8 @@ const App = () => {
               <>
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Historique</h2>
-                    <p className="text-slate-600">Vos analyses récentes</p>
+                    <h2 className="text-2xl font-bold text-gray-900">Historique</h2>
+                    <p className="text-gray-600">Vos analyses récentes</p>
                   </div>
                   <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium">
                     {history.length} repas
@@ -383,29 +381,29 @@ const App = () => {
                     <div
                       key={item.id}
                       onClick={() => setSelectedHistoryItem(item)}
-                      className="bg-white rounded-xl p-4 shadow-sm border border-slate-200 cursor-pointer hover:shadow-md hover:border-emerald-200 transition-all active:scale-98"
+                      className="card p-4 cursor-pointer hover:shadow-md hover:border-emerald-200 transition-all active:scale-98"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
                           {item.image ? (
                             <img src={item.image} className="w-full h-full object-cover rounded-lg" />
                           ) : (
-                            <Apple className="w-6 h-6 text-slate-400" />
+                            <Apple className="w-6 h-6 text-gray-400" />
                           )}
                         </div>
                         <div className="flex-grow">
                           <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-semibold text-slate-900">{item.name}</h4>
-                            <div className={`px-2 py-1 rounded-lg text-xs font-medium ${getScoreColor(item.healthScore)}`}>
+                            <h4 className="font-semibold text-gray-900">{item.name}</h4>
+                            <div className={`score-badge ${getScoreColor(item.healthScore).replace('text-', 'score-').replace('-600', '').replace('-500', '').toLowerCase()}`}>
                               {item.healthLabel}
                             </div>
                           </div>
                           <div className="flex items-center justify-between text-sm">
-                            <span className="text-slate-500">{item.date}</span>
-                            <span className="font-medium text-slate-900">{item.totalCalories} kcal</span>
+                            <span className="text-gray-500">{item.date}</span>
+                            <span className="font-medium text-gray-900">{item.totalCalories} kcal</span>
                           </div>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-slate-400" />
+                        <ChevronRight className="w-5 h-5 text-gray-400" />
                       </div>
                     </div>
                   ))}
@@ -418,29 +416,29 @@ const App = () => {
         {activeTab === 'profil' && (
           <div className="space-y-6">
             {/* Profil utilisateur */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-green-500 rounded-2xl mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+            <div className="card p-6 text-center">
+              <div className="avatar-large mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
                 JD
               </div>
-              <h2 className="text-xl font-bold text-slate-900">Jean Dupont</h2>
-              <p className="text-slate-600 text-sm">Utilisateur Premium</p>
+              <h2 className="text-xl font-bold text-primary">Jean Dupont</h2>
+              <p className="text-secondary text-sm">Utilisateur Premium</p>
             </div>
 
             {/* Statistiques */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200 text-center">
-                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Target className="w-5 h-5 text-emerald-600" />
+              <div className="card p-4 text-center">
+                <div className="icon-container mx-auto mb-3">
+                  <Target className="w-5 h-5 text-accent" />
                 </div>
-                <div className="text-2xl font-bold text-slate-900">92%</div>
-                <div className="text-xs text-slate-500 uppercase tracking-wide">Objectif</div>
+                <div className="text-2xl font-bold text-primary">92%</div>
+                <div className="text-xs text-secondary uppercase tracking-wide">Objectif</div>
               </div>
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200 text-center">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <TrendingUp className="w-5 h-5 text-blue-600" />
+              <div className="card p-4 text-center">
+                <div className="icon-container mx-auto mb-3">
+                  <TrendingUp className="w-5 h-5 text-info" />
                 </div>
-                <div className="text-2xl font-bold text-slate-900">8.2</div>
-                <div className="text-xs text-slate-500 uppercase tracking-wide">Moyenne</div>
+                <div className="text-2xl font-bold text-primary">8.2</div>
+                <div className="text-xs text-secondary uppercase tracking-wide">Moyenne</div>
               </div>
             </div>
 
@@ -453,13 +451,13 @@ const App = () => {
               ].map((item, i) => (
                 <button
                   key={i}
-                  className="w-full bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition-all active:scale-98"
+                  className="card p-4 flex items-center gap-4 hover:shadow-md transition-all active:scale-98"
                 >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${item.color}`}>
+                  <div className="icon-container">
                     <item.icon className="w-5 h-5" />
                   </div>
-                  <span className="font-medium text-slate-900">{item.label}</span>
-                  <ChevronRight className="w-5 h-5 text-slate-400 ml-auto" />
+                  <span className="font-medium text-primary">{item.label}</span>
+                  <ChevronRight className="w-5 h-5 text-secondary ml-auto" />
                 </button>
               ))}
             </div>
@@ -469,15 +467,15 @@ const App = () => {
 
       {/* Navigation moderne */}
       <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-md z-50">
-        <div className="bg-white/90 backdrop-blur-xl border border-slate-200/50 rounded-2xl px-6 py-4 shadow-xl">
+        <div className="nav-container">
           <div className="flex justify-around items-center">
             <button
               onClick={() => setActiveTab('historique')}
               className={`flex flex-col items-center gap-1 transition-all ${
-                activeTab === 'historique' ? 'text-emerald-600 scale-110' : 'text-slate-500 hover:text-slate-700'
+                activeTab === 'historique' ? 'nav-active' : 'nav-inactive'
               }`}
             >
-              <Clock className={`w-6 h-6 ${activeTab === 'historique' ? 'fill-emerald-100' : ''}`} />
+              <Clock className={`w-6 h-6 ${activeTab === 'historique' ? 'fill-accent-light' : ''}`} />
               <span className="text-xs font-medium">Historique</span>
             </button>
 
@@ -485,23 +483,23 @@ const App = () => {
               onClick={() => setActiveTab('scanner')}
               className="relative -top-2"
             >
-              <div className={`w-16 h-16 bg-gradient-to-r from-emerald-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg transition-transform ${
-                activeTab === 'scanner' ? 'scale-110 shadow-emerald-200' : 'hover:scale-105'
+              <div className={`nav-button-main ${
+                activeTab === 'scanner' ? 'nav-active-main' : 'nav-hover-main'
               }`}>
                 <Camera className="w-7 h-7 text-white" />
               </div>
               {activeTab === 'scanner' && (
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <div className="nav-indicator"></div>
               )}
             </button>
 
             <button
               onClick={() => setActiveTab('profil')}
               className={`flex flex-col items-center gap-1 transition-all ${
-                activeTab === 'profil' ? 'text-emerald-600 scale-110' : 'text-slate-500 hover:text-slate-700'
+                activeTab === 'profil' ? 'nav-active' : 'nav-inactive'
               }`}
             >
-              <User className={`w-6 h-6 ${activeTab === 'profil' ? 'fill-emerald-100' : ''}`} />
+              <User className={`w-6 h-6 ${activeTab === 'profil' ? 'fill-accent-light' : ''}`} />
               <span className="text-xs font-medium">Profil</span>
             </button>
           </div>
