@@ -8,4 +8,8 @@ export default {
     extend: {},
   },
   plugins: [],
+  // Tailwind v4 compatibility
+  corePlugins: {
+    preflight: true,
+  },
 }
