@@ -1,23 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Apple, Zap, Activity, ChevronRight, AlertCircle, CheckCircle2, User, Clock, ChevronLeft, Target, TrendingUp, ArrowLeft, Sparkles, Search, Info } from 'lucide-react';
+import { Camera, Apple, Zap, Activity, ChevronRight, AlertCircle, CheckCircle2, User, Clock, ChevronLeft, Target, TrendingUp, ArrowLeft, Sparkles, Search, Info, BarChart3, Settings, Heart } from 'lucide-react';
 
 // --- Configuration ---
-const apiKey = ""; 
+const apiKey = "";
 const MODEL_NAME = "gemini-2.5-flash-preview-09-2025";
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('scanner');
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
   const [loadingStep, setLoadingStep] = useState(0);
-  
+
   const [history, setHistory] = useState([
-    { 
-      id: 1, 
-      date: 'Aujourd\'hui, 08:30', 
-      name: 'Bowl Acai & Fruits', 
-      totalCalories: 380, 
-      healthScore: 9, 
-      healthLabel: 'Excellent', 
+    {
+      id: 1,
+      date: 'Aujourd\'hui, 08:30',
+      name: 'Bowl Acai & Fruits',
+      totalCalories: 380,
+      healthScore: 9,
+      healthLabel: 'Excellent',
       image: null,
       foods: [
         { name: 'Baies d\'Acai', portion: '150g', calories: 120, protein: 2, carbs: 15, fat: 8 },
@@ -37,11 +37,10 @@ const App = () => {
   const fileInputRef = useRef(null);
 
   const loadingMessages = [
-    "Initialisation de l'optique...",
-    "Détection des textures alimentaires...",
-    "Estimation des volumes par IA...",
-    "Calcul des densités caloriques...",
-    "Évaluation du score nutritionnel..."
+    "Analyse des textures...",
+    "Détection des ingrédients...",
+    "Calcul nutritionnel...",
+    "Évaluation santé..."
   ];
 
   useEffect(() => {
@@ -53,7 +52,7 @@ const App = () => {
     if (loading) {
       interval = setInterval(() => {
         setLoadingStep((prev) => (prev + 1) % loadingMessages.length);
-      }, 1500);
+      }, 1200);
     } else {
       setLoadingStep(0);
     }
@@ -143,121 +142,115 @@ const App = () => {
   };
 
   const getScoreColor = (score) => {
-    if (score >= 8) return 'text-emerald-500';
-    if (score >= 6) return 'text-sky-500';
-    if (score >= 4) return 'text-amber-500';
-    return 'text-rose-500';
+    if (score >= 8) return 'text-emerald-600 bg-emerald-50 border-emerald-200';
+    if (score >= 6) return 'text-blue-600 bg-blue-50 border-blue-200';
+    if (score >= 4) return 'text-amber-600 bg-amber-50 border-amber-200';
+    return 'text-red-600 bg-red-50 border-red-200';
+  };
+
+  const getScoreGradient = (score) => {
+    if (score >= 8) return 'from-emerald-500 to-green-500';
+    if (score >= 6) return 'from-blue-500 to-cyan-500';
+    if (score >= 4) return 'from-amber-500 to-orange-500';
+    return 'from-red-500 to-pink-500';
   };
 
   // --- UI Components ---
 
   const ScanningOverlay = () => (
-    <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
-      {/* Laser Beam */}
-      <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_rgba(52,211,153,0.8)] animate-[scan_2s_ease-in-out_infinite]" />
-      
-      {/* Glitch/Grid effect */}
-      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#34d399_1px,transparent_1px)] [background-size:20px_20px]" />
-      
-      {/* Corners */}
-      <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-emerald-400 rounded-tl-lg" />
-      <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-emerald-400 rounded-tr-lg" />
-      <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-emerald-400 rounded-bl-lg" />
-      <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-emerald-400 rounded-br-lg" />
-      
-      {/* Processing indicator */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4 bg-black/40 backdrop-blur-md p-6 rounded-full aspect-square justify-center border border-white/10 animate-pulse">
-        <Search className="w-8 h-8 text-emerald-400 animate-bounce" />
+    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-blue-500/10 to-purple-500/20 backdrop-blur-sm flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-500 rounded-full animate-spin mx-auto"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Search className="w-6 h-6 text-emerald-600" />
+          </div>
+        </div>
+        <p className="text-white font-semibold text-sm">{loadingMessages[loadingStep]}</p>
       </div>
     </div>
   );
 
   const MealDetails = ({ data, onBack }) => (
-    <div className="space-y-6 pb-12 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {onBack && (
-        <button onClick={onBack} className="flex items-center gap-2 text-slate-400 font-bold text-xs mb-2 transition-colors hover:text-emerald-500">
-          <ArrowLeft className="w-4 h-4" /> RETOUR
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors p-2 -ml-2"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span className="font-medium">Retour</span>
         </button>
       )}
 
-      {data.image && (
-        <div className="rounded-[2.5rem] overflow-hidden h-56 w-full shadow-2xl shadow-emerald-900/10 border border-white relative group">
-          <img src={data.image} alt="Repas" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-          <div className="absolute bottom-6 left-6 flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30 text-white text-xs font-bold">
-            <Sparkles className="w-3 h-3 fill-white" /> ANALYSE IA CERTIFIÉE
+      {/* Score principal */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">Score nutritionnel</h2>
+            <p className="text-sm text-slate-600">Évaluation globale</p>
+          </div>
+          <div className={`px-4 py-2 rounded-xl border-2 ${getScoreColor(data.healthScore)}`}>
+            <div className="text-2xl font-bold">{data.healthScore}/10</div>
+            <div className="text-xs font-medium">{data.healthLabel}</div>
           </div>
         </div>
-      )}
 
-      {/* Main Score Card with Glassmorphism */}
-      <div className={`p-8 rounded-[2.5rem] border-2 shadow-xl overflow-hidden relative ${data.healthScore >= 8 ? 'bg-emerald-50/50 border-emerald-100' : 'bg-slate-50 border-slate-100'}`}>
-        <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/40 rounded-full blur-3xl" />
-        <div className="relative z-10">
-          <div className="flex justify-between items-start mb-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-slate-900">{data.totalCalories}</div>
+            <div className="text-xs text-slate-500 uppercase tracking-wide">Calories</div>
+          </div>
+          <div className="text-center">
+            <div className="text-sm text-slate-600">{data.date}</div>
+            <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">Analysé</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Analyse IA */}
+      <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 text-white">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <h3 className="font-bold">Analyse intelligente</h3>
+        </div>
+        <p className="text-slate-300 mb-4 leading-relaxed">{data.analysis}</p>
+        <div className="bg-white/10 rounded-xl p-4">
+          <div className="flex items-start gap-3">
+            <Heart className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
             <div>
-              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Qualité Nutritionnelle</h2>
-              <div className={`text-4xl font-black tracking-tight ${getScoreColor(data.healthScore)}`}>{data.healthLabel}</div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 rounded-2xl bg-white shadow-inner border border-slate-100 flex flex-col items-center justify-center">
-                <span className={`text-2xl font-black ${getScoreColor(data.healthScore)}`}>{data.healthScore}</span>
-                <span className="text-[8px] font-bold text-slate-400 mt-[-4px]">SUR 10</span>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/90 p-4 rounded-3xl shadow-sm border border-slate-50">
-              <span className="block text-[10px] uppercase font-black text-slate-400 mb-1">Énergie</span>
-              <span className="text-xl font-black text-slate-800 tracking-tight">{data.totalCalories} <span className="text-xs font-bold opacity-40">KCAL</span></span>
-            </div>
-            <div className="bg-white/90 p-4 rounded-3xl shadow-sm border border-slate-50">
-              <span className="block text-[10px] uppercase font-black text-slate-400 mb-1">Date</span>
-              <span className="text-xs font-bold text-slate-600 block mt-1">{data.date}</span>
+              <div className="font-medium text-white mb-1">Recommandation</div>
+              <p className="text-slate-200 text-sm">{data.recommendation}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* AI Intelligence Box */}
-      <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Activity className="w-24 h-24" />
-        </div>
-        <div className="relative z-10 space-y-4">
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-black tracking-widest uppercase">
-            <Sparkles className="w-4 h-4 fill-emerald-400" /> Intelligence NutriScan
-          </div>
-          <p className="text-slate-300 text-sm leading-relaxed font-medium">{data.analysis}</p>
-          <div className="h-px bg-white/10 w-full" />
-          <div className="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
-            <Info className="w-5 h-5 text-emerald-400 shrink-0" />
-            <p className="text-sm italic text-slate-200">"{data.recommendation}"</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Ingredients List with Staggered Appearance */}
-      <div className="space-y-3">
-        <h3 className="px-2 text-xs font-black uppercase tracking-widest text-slate-400">Composition Analysée</h3>
+      {/* Ingrédients */}
+      <div className="space-y-4">
+        <h3 className="font-bold text-slate-900 px-1">Composition détaillée</h3>
         {data.foods.map((food, i) => (
-          <div key={i} className="bg-white p-5 rounded-3xl border border-slate-100 flex justify-between items-center shadow-sm animate-in fade-in slide-in-from-right-4 duration-500" style={{ animationDelay: `${i * 150}ms` }}>
-            <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-xl shadow-inner">
-                    {i % 2 === 0 ? '🥑' : '🍛'}
+          <div key={i} className="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
+                  <span className="text-lg">🥗</span>
                 </div>
                 <div>
-                    <div className="font-bold text-slate-800 text-base">{food.name}</div>
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{food.portion}</div>
+                  <div className="font-semibold text-slate-900">{food.name}</div>
+                  <div className="text-sm text-slate-500">{food.portion}</div>
                 </div>
-            </div>
-            <div className="text-right">
-                <div className="font-black text-slate-900 text-lg">{food.calories} <span className="text-xs font-normal text-slate-300">kcal</span></div>
-                <div className="flex gap-2 text-[9px] font-black text-slate-400 uppercase">
-                  <span className="text-emerald-500/70">P {food.protein}g</span>
-                  <span className="text-sky-500/70">G {food.carbs}g</span>
-                  <span className="text-rose-500/70">L {food.fat}g</span>
+              </div>
+              <div className="text-right">
+                <div className="font-bold text-slate-900">{food.calories} kcal</div>
+                <div className="flex gap-3 text-xs text-slate-500 mt-1">
+                  <span>P {food.protein}g</span>
+                  <span>G {food.carbs}g</span>
+                  <span>L {food.fat}g</span>
                 </div>
+              </div>
             </div>
           </div>
         ))}
@@ -266,160 +259,207 @@ const App = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-900 pb-24 selection:bg-emerald-100 selection:text-emerald-900">
-      <style>{`
-        @keyframes scan {
-          0%, 100% { top: 0%; opacity: 0; }
-          10%, 90% { opacity: 1; }
-          50% { top: 100%; }
-        }
-      `}</style>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-slate-900">
       
-      {/* Dynamic Header */}
-      <header className="bg-white/70 backdrop-blur-xl border-b border-slate-100 sticky top-0 z-30 px-6 py-5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="bg-emerald-500 p-2.5 rounded-[1rem] shadow-lg shadow-emerald-200 rotate-3">
-            <Apple className="text-white w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-base font-black tracking-tight leading-none">NutriScan <span className="text-emerald-500">AI</span></h1>
-            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1 italic">Intelligence Biométrique</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-            <div className="bg-slate-100 h-8 w-8 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-slate-400" />
+      {/* Header moderne */}
+      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-30 px-6 py-4">
+        <div className="max-w-md mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg">
+              <Apple className="text-white w-5 h-5" />
             </div>
+            <div>
+              <h1 className="text-lg font-bold tracking-tight">NutriScan</h1>
+              <p className="text-xs text-slate-500">IA Nutritionnelle</p>
+            </div>
+          </div>
+          <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+            <User className="w-4 h-4 text-slate-600" />
+          </div>
         </div>
       </header>
 
-      <main className="max-w-md mx-auto px-5 mt-8">
+      <main className="max-w-md mx-auto px-6 py-8 pb-24">
         {activeTab === 'scanner' && (
-          <div className="space-y-6 animate-in fade-in duration-500">
-            <section className="bg-white rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-white overflow-hidden relative group">
+          <div className="space-y-6">
+            {/* Zone de capture */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
               {!image ? (
-                <div onClick={() => fileInputRef.current?.click()} className="py-24 px-10 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50/50 transition-all active:scale-[0.98]">
-                  <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mb-6 shadow-inner animate-pulse">
-                    <Camera className="w-12 h-12 text-emerald-500" />
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-12 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-colors"
+                >
+                  <div className="w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
+                    <Camera className="w-10 h-10 text-emerald-600" />
                   </div>
-                  <h3 className="text-xl font-black mb-2 text-center text-slate-800">Prêt pour le scan ?</h3>
-                  <p className="text-slate-400 text-center text-sm font-medium max-w-[200px]">Prenez une photo nette de votre assiette pour l'IA.</p>
+                  <h3 className="text-xl font-bold mb-2 text-center">Scanner un repas</h3>
+                  <p className="text-slate-600 text-center text-sm max-w-xs">
+                    Prenez une photo de votre assiette pour une analyse nutritionnelle instantanée
+                  </p>
                 </div>
               ) : (
-                <div className="relative aspect-square sm:aspect-video md:aspect-square bg-slate-900">
-                  <img src={image} alt="Repas" className={`w-full h-full object-cover transition-all duration-1000 ${loading ? 'opacity-70 scale-110 blur-[2px]' : ''}`} />
+                <div className="relative aspect-square bg-slate-900 rounded-2xl overflow-hidden">
+                  <img
+                    src={image}
+                    alt="Repas"
+                    className={`w-full h-full object-cover transition-all duration-500 ${loading ? 'opacity-50 scale-105 blur-sm' : ''}`}
+                  />
                   {loading && <ScanningOverlay />}
                   {!result && !loading && (
-                    <button onClick={() => setImage(null)} className="absolute top-6 left-6 bg-black/40 backdrop-blur-xl text-white p-3 rounded-2xl hover:bg-black/60 transition-colors border border-white/10 shadow-lg"><ChevronLeft className="w-6 h-6" /></button>
+                    <button
+                      onClick={() => setImage(null)}
+                      className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-slate-700 p-2 rounded-xl hover:bg-white transition-colors shadow-lg"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
                   )}
                 </div>
               )}
-              <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" capture="environment" className="hidden" />
-            </section>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+              />
+            </div>
 
+            {/* Bouton d'analyse */}
             {image && !result && !loading && (
-              <button onClick={analyzePlate} className="w-full bg-slate-900 hover:bg-black text-white font-black py-5 rounded-[2rem] shadow-2xl shadow-slate-400/20 flex items-center justify-center gap-3 transition-all active:scale-95 group">
-                <Zap className="w-6 h-6 fill-emerald-400 text-emerald-400 group-hover:animate-bounce" /> ANALYSER L'ASSIETTE
+              <button
+                onClick={analyzePlate}
+                className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold py-4 rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all active:scale-95"
+              >
+                <Zap className="w-5 h-5" />
+                Analyser le repas
               </button>
             )}
 
+            {/* État de chargement */}
             {loading && (
-              <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 flex flex-col items-center justify-center space-y-6 shadow-xl animate-pulse">
-                <div className="flex gap-2">
-                    {[0, 1, 2].map(i => <div key={i} className="w-3 h-3 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }} />)}
-                </div>
-                <div className="text-center space-y-1">
-                  <p className="font-black text-slate-800 uppercase tracking-widest text-xs">Traitement Neural en cours</p>
-                  <p className="text-sm font-bold text-emerald-500 h-5 transition-all duration-500">{loadingMessages[loadingStep]}</p>
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+                <div className="text-center space-y-4">
+                  <div className="flex justify-center gap-2">
+                    {[0, 1, 2].map(i => (
+                      <div
+                        key={i}
+                        className="w-3 h-3 bg-emerald-500 rounded-full animate-bounce"
+                        style={{ animationDelay: `${i * 0.2}s` }}
+                      />
+                    ))}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Analyse en cours...</p>
+                    <p className="text-sm text-emerald-600 mt-1">{loadingMessages[loadingStep]}</p>
+                  </div>
                 </div>
               </div>
             )}
 
+            {/* Résultats */}
             {result && <MealDetails data={result} onBack={() => { setImage(null); setResult(null); }} />}
           </div>
         )}
 
         {activeTab === 'historique' && (
-          <div className="space-y-5 animate-in fade-in duration-500">
+          <div className="space-y-6">
             {selectedHistoryItem ? (
-                <MealDetails data={selectedHistoryItem} onBack={() => setSelectedHistoryItem(null)} />
+              <MealDetails data={selectedHistoryItem} onBack={() => setSelectedHistoryItem(null)} />
             ) : (
-                <>
-                <div className="flex justify-between items-end mb-4 px-2">
-                    <div>
-                        <h2 className="text-2xl font-black text-slate-800">Historique</h2>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Suivi de vos nutriments</p>
-                    </div>
-                    <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-4 py-1.5 rounded-full">{history.length} ENTRÉES</span>
+              <>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900">Historique</h2>
+                    <p className="text-slate-600">Vos analyses récentes</p>
+                  </div>
+                  <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium">
+                    {history.length} repas
+                  </div>
                 </div>
+
                 <div className="space-y-4">
-                    {history.map((item, idx) => (
-                        <div key={item.id} onClick={() => setSelectedHistoryItem(item)} className="bg-white p-5 rounded-[2rem] border border-slate-100 flex items-center gap-5 hover:border-emerald-200 cursor-pointer transition-all shadow-sm active:scale-[0.97] group animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: `${idx * 100}ms` }}>
-                            <div className="w-16 h-16 rounded-2xl bg-slate-50 overflow-hidden flex-shrink-0 border border-slate-50 relative">
-                                {item.image ? <img src={item.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Apple className="text-slate-200 w-8 h-8" /></div>}
-                                <div className={`absolute inset-0 opacity-10 ${getScoreColor(item.healthScore).replace('text', 'bg')}`} />
-                            </div>
-                            <div className="flex-grow">
-                                <div className="flex justify-between items-center mb-1">
-                                    <span className="text-[9px] font-black text-slate-300 uppercase tracking-tighter">{item.date}</span>
-                                    <div className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md border ${getScoreColor(item.healthScore)} ${getScoreColor(item.healthScore).replace('text', 'bg').replace('500', '50')}`}>
-                                        {item.healthLabel}
-                                    </div>
-                                </div>
-                                <h4 className="font-bold text-slate-800 text-base group-hover:text-emerald-600 transition-colors line-clamp-1">{item.name}</h4>
-                                <div className="text-xs font-bold text-slate-400 flex items-center gap-2">
-                                    <Zap className="w-3 h-3 text-amber-400 fill-amber-400" /> {item.totalCalories} kcal
-                                </div>
-                            </div>
-                            <ChevronRight className="text-slate-200 w-6 h-6 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
+                  {history.map((item, idx) => (
+                    <div
+                      key={item.id}
+                      onClick={() => setSelectedHistoryItem(item)}
+                      className="bg-white rounded-xl p-4 shadow-sm border border-slate-200 cursor-pointer hover:shadow-md hover:border-emerald-200 transition-all active:scale-98"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          {item.image ? (
+                            <img src={item.image} className="w-full h-full object-cover rounded-lg" />
+                          ) : (
+                            <Apple className="w-6 h-6 text-slate-400" />
+                          )}
                         </div>
-                    ))}
+                        <div className="flex-grow">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-semibold text-slate-900">{item.name}</h4>
+                            <div className={`px-2 py-1 rounded-lg text-xs font-medium ${getScoreColor(item.healthScore)}`}>
+                              {item.healthLabel}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-500">{item.date}</span>
+                            <span className="font-medium text-slate-900">{item.totalCalories} kcal</span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-slate-400" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                </>
+              </>
             )}
           </div>
         )}
 
         {activeTab === 'profil' && (
-          <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="bg-white p-10 rounded-[3rem] border border-white text-center shadow-2xl shadow-slate-200/50 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 to-sky-400" />
-              <div className="relative w-28 h-28 mx-auto mb-6">
-                <div className="w-full h-full bg-gradient-to-tr from-emerald-500 to-teal-600 rounded-[2.5rem] flex items-center justify-center text-white text-4xl font-black border-4 border-white shadow-xl rotate-3">JD</div>
-                <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-2xl shadow-lg border border-slate-50">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 fill-emerald-50" />
-                </div>
+          <div className="space-y-6">
+            {/* Profil utilisateur */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-green-500 rounded-2xl mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+                JD
               </div>
-              <div>
-                <h2 className="text-2xl font-black text-slate-800 tracking-tight">Jean Dupont</h2>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1">Utilisateur Certifié</p>
+              <h2 className="text-xl font-bold text-slate-900">Jean Dupont</h2>
+              <p className="text-slate-600 text-sm">Utilisateur Premium</p>
+            </div>
+
+            {/* Statistiques */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200 text-center">
+                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Target className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div className="text-2xl font-bold text-slate-900">92%</div>
+                <div className="text-xs text-slate-500 uppercase tracking-wide">Objectif</div>
+              </div>
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200 text-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <TrendingUp className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="text-2xl font-bold text-slate-900">8.2</div>
+                <div className="text-xs text-slate-500 uppercase tracking-wide">Moyenne</div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
-              <div className="bg-slate-900 p-6 rounded-[2.5rem] shadow-xl text-white">
-                <div className="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center mb-4">
-                  <Target className="text-emerald-400 w-5 h-5" />
-                </div>
-                <span className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Objectif Hebdo</span>
-                <span className="text-2xl font-black tracking-tight">92<span className="text-xs opacity-40 ml-1">%</span></span>
-              </div>
-              <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <div className="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center mb-4">
-                  <TrendingUp className="text-emerald-500 w-5 h-5" />
-                </div>
-                <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Moyenne Santé</span>
-                <span className="text-2xl font-black text-slate-800 tracking-tight">8.2<span className="text-xs opacity-30 ml-1">/10</span></span>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden p-2">
-              {['Objectifs Nutritionnels', 'Préférences IA', 'Exporter ma Santé'].map((item, i) => (
-                <button key={i} className="w-full px-6 py-5 flex justify-between items-center rounded-2xl hover:bg-slate-50 transition-all group">
-                  <span className="font-bold text-slate-700 group-hover:translate-x-1 transition-transform">{item}</span>
-                  <div className="bg-slate-50 p-2 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                    <ChevronRight className="w-4 h-4" />
+            {/* Menu paramètres */}
+            <div className="space-y-3">
+              {[
+                { icon: BarChart3, label: 'Statistiques détaillées', color: 'text-purple-600 bg-purple-100' },
+                { icon: Settings, label: 'Préférences', color: 'text-slate-600 bg-slate-100' },
+                { icon: Heart, label: 'Objectifs santé', color: 'text-red-600 bg-red-100' }
+              ].map((item, i) => (
+                <button
+                  key={i}
+                  className="w-full bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition-all active:scale-98"
+                >
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${item.color}`}>
+                    <item.icon className="w-5 h-5" />
                   </div>
+                  <span className="font-medium text-slate-900">{item.label}</span>
+                  <ChevronRight className="w-5 h-5 text-slate-400 ml-auto" />
                 </button>
               ))}
             </div>
@@ -427,25 +467,44 @@ const App = () => {
         )}
       </main>
 
-      {/* Futuristic Navigation Bar */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] z-50">
-        <div className="bg-white/80 backdrop-blur-2xl border border-white/50 px-8 py-3 rounded-[2.5rem] flex justify-between items-center shadow-2xl shadow-slate-900/10">
-            <button onClick={() => setActiveTab('historique')} className={`flex flex-col items-center transition-all duration-300 ${activeTab === 'historique' ? 'text-emerald-500 scale-110' : 'text-slate-300 hover:text-slate-400'}`}>
-                <Clock className={`w-6 h-6 ${activeTab === 'historique' ? 'fill-emerald-100' : ''}`} strokeWidth={activeTab === 'historique' ? 3 : 2} />
-                <span className="text-[8px] font-black uppercase mt-1 tracking-tighter">Historique</span>
-            </button>
-            
-            <button onClick={() => setActiveTab('scanner')} className={`relative -top-8 p-1 rounded-full transition-transform active:scale-90 ${activeTab === 'scanner' ? 'scale-110' : ''}`}>
-                <div className="bg-slate-900 text-white p-5 rounded-[2rem] shadow-2xl shadow-emerald-500/30">
-                    <Camera className="w-7 h-7" strokeWidth={3} />
-                </div>
-                {activeTab === 'scanner' && <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]" />}
+      {/* Navigation moderne */}
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-md z-50">
+        <div className="bg-white/90 backdrop-blur-xl border border-slate-200/50 rounded-2xl px-6 py-4 shadow-xl">
+          <div className="flex justify-around items-center">
+            <button
+              onClick={() => setActiveTab('historique')}
+              className={`flex flex-col items-center gap-1 transition-all ${
+                activeTab === 'historique' ? 'text-emerald-600 scale-110' : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              <Clock className={`w-6 h-6 ${activeTab === 'historique' ? 'fill-emerald-100' : ''}`} />
+              <span className="text-xs font-medium">Historique</span>
             </button>
 
-            <button onClick={() => setActiveTab('profil')} className={`flex flex-col items-center transition-all duration-300 ${activeTab === 'profil' ? 'text-emerald-500 scale-110' : 'text-slate-300 hover:text-slate-400'}`}>
-                <User className={`w-6 h-6 ${activeTab === 'profil' ? 'fill-emerald-100' : ''}`} strokeWidth={activeTab === 'profil' ? 3 : 2} />
-                <span className="text-[8px] font-black uppercase mt-1 tracking-tighter">Compte</span>
+            <button
+              onClick={() => setActiveTab('scanner')}
+              className="relative -top-2"
+            >
+              <div className={`w-16 h-16 bg-gradient-to-r from-emerald-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg transition-transform ${
+                activeTab === 'scanner' ? 'scale-110 shadow-emerald-200' : 'hover:scale-105'
+              }`}>
+                <Camera className="w-7 h-7 text-white" />
+              </div>
+              {activeTab === 'scanner' && (
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-emerald-500 rounded-full"></div>
+              )}
             </button>
+
+            <button
+              onClick={() => setActiveTab('profil')}
+              className={`flex flex-col items-center gap-1 transition-all ${
+                activeTab === 'profil' ? 'text-emerald-600 scale-110' : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              <User className={`w-6 h-6 ${activeTab === 'profil' ? 'fill-emerald-100' : ''}`} />
+              <span className="text-xs font-medium">Profil</span>
+            </button>
+          </div>
         </div>
       </nav>
     </div>
